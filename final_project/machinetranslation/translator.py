@@ -7,16 +7,19 @@ load_dotenv()
 apikey = os.environ['apikey']
 url = os.environ['url']
 
-authenticator = IAMAuthenticator(apikey)
+auth = IAMAuthenticator(apikey)
 language_translator = LanguageTranslatorV3(
-    version='{version}',
-    authenticator=authenticator
+    version='2018-05-01',
+    authenticator=auth
 )
-language_translator.set_service_url('https://api.eu-de.language-translator.watson.cloud.ibm.com')
+language_translator.set_service_url(url)
 
 def english_to_french(english_text):
-    french_text = language_translator.translate(english_text,model_id='en-fr')
+    translation_json = language_translator.translate(english_text,model_id='en-fr').get_result()
+    french_text = translation_json['translations'][0]['translation']
     return french_text
+
 def french_to_english(french_text):
-    english_text = language_translator.translate(french_text,model_id='fr-en')
+    translation_json = language_translator.translate(french_text,model_id='fr-en').get_result()
+    english_text = translation_json['translations'][0]['translation']
     return english_text
